@@ -1,0 +1,23 @@
+
+void decode_huff(node * root, string s) {
+    string ans = "";
+    node* n = root;
+    for(auto itr = s.begin(); itr != s.end();itr++){
+        node* next;
+        if(*itr == '0'){
+            next = n -> left;
+        }
+        else{
+            next = n -> right;
+        }
+        if(next -> data == '\0'){
+            n = next;
+        }
+        else{
+            ans += next -> data;
+            n = root;
+        }
+    }
+    cout << ans << endl;
+    
+}

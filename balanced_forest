@@ -1,0 +1,117 @@
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <set>
+#include <map>
+#include <queue>
+#include <stack>
+#include <deque>
+#include <cassert>
+#include <stdlib.h>
+
+using namespace std;
+
+
+typedef long long ll;
+
+const ll INF = (ll) 1e18;
+const int N = (int) 5e4 + 10;
+
+vector<int> g[N];
+ll c[N];
+ll f[N];
+ll res = INF;
+ll tot = 0;
+bool was[N];
+
+void upd(ll a, ll b, ll c) {
+    if (a == b && c <= a)
+        res = min(res, a - c);
+    if (a == c && b <= a)
+        res = min(res, a - b);
+    if (b == c && a <= b)
+        res = min(res, b - a); 
+}
+
+set<ll>* unite(set<ll>* a, set<ll>* b) {
+    if (a->size() > b->size())
+        swap(a, b);
+    for (ll x : *a) {
+        if (b->count(tot - 2 * x))
+            upd(tot - 2 * x, x, x);
+        if (b->count(x))
+            upd(x, x, tot - 2 * x);
+        if ((tot - x) % 2 == 0 && b->count((tot - x) / 2))
+            upd((tot - x) / 2, x, (tot - x) / 2);
+    }
+    for (ll x : *a) {
+        b->insert(x);
+    }
+    delete a;
+    return b;
+}
+
+set<ll>* dfs(int v) {
+    was[v] = true;
+    f[v] = c[v];
+    set<ll>* sv = new set<ll>();
+    for (int to : g[v])
+        if (!was[to]) {
+            set<ll>* sto = dfs(to);
+            f[v] += f[to];
+            sv = unite(sv, sto);
+        }
+    if (f[v] % 2 == 0 && sv->count(f[v] / 2))
+        upd(f[v] / 2, f[v] / 2, tot - f[v]);
+    if (sv->count(tot - f[v]))
+        upd(tot - f[v], 2 * f[v] - tot, tot - f[v]);
+    if (sv->count(2 * f[v] - tot))
+        upd(2 * f[v] - tot, tot - f[v], tot - f[v]);
+    sv->insert(f[v]);
+    return sv;
+}
+
+void solve() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < N; i++) {
+        was[i] = false;
+        g[i].clear();
+        c[i] = 0;
+    }
+    tot = 0;
+    res = INF;
+    for (int i = 0; i < n; i++) {
+        cin >> c[i];
+        tot += c[i];
+    }
+    for (int i = 0; i < n - 1; i++) {
+        int x, y;
+        cin >> x >> y;
+        --x;
+        --y;
+        g[x].push_back(y);
+        g[y].push_back(x);
+    }
+    set<ll>* s = dfs(0);
+    //for (int i = 0; i < n; i++)
+    //    cerr << f[i] << " ";
+    //cerr << endl;
+    delete s;
+    if (res == INF)
+        res = -1;
+    cout << res << endl;
+    // cerr << "----------" << endl;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    int p;
+    cin >> p;
+    while (p--) {
+        solve();
+    }
+    return 0;
+}
