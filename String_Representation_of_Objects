@@ -1,0 +1,25 @@
+#!/bin/python
+
+import math
+import os
+import random
+import re
+import sys
+
+
+
+class Car:
+    def __init__(self,a,b):
+        self.a = a
+        self.b = b
+
+    def __str__(self):
+        return "Car with the maximum speed of {} {}".format(self.a,self.b)
+
+class Boat:
+    def __init__(self,a):
+        self.a = a
+    def __str__(self):
+        return "Boat with the maximum speed of {} knots".format(self.a)
+
+if __name__ == '__main__':
